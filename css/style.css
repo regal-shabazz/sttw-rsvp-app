@@ -140,6 +140,7 @@ bottom: 15%;
   font-size: clamp(50px, 7vw, 100px);
   line-height: 1;
   color: #5b2a25;
+   font-family: "Mea Culpa", cursive;
 }
 
 .hero-and {
@@ -321,8 +322,9 @@ bottom: 15%;
 
 .date-footer {
   margin: 26px 0 0;
-  font-size: 22px;
+  font-size: 42px;
   color: #5b2a25;
+   font-family: "Mea Culpa", cursive;
 }
 
 /* Confetti */
@@ -900,4 +902,6 @@ body.scroll-locked {
   margin-top: 6px;
   font-weight: 600;
   color: #8e6c8a; /* soft mauve accent */
+   font-family: "Mea Culpa", cursive;
+   font-size: 25px;
 }
