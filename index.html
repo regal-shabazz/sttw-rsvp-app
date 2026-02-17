@@ -1,0 +1,404 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RSVP</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="./css/style.css" />
+
+    <link rel="preload" as="image" href="./assets/curtain-closed.jpg" />
+    <link rel="preload" as="image" href="./assets/curtain-open.jpg" />
+  </head>
+  <body>
+    <!-- INTRO ONLY -->
+    <main class="intro" id="intro">
+      <!--
+      IMPORTANT:
+      - This wrapper is designed so you can later put a BACKGROUND IMAGE behind the curtain video,
+        once you get the transparent video format (likely .webm with alpha).
+      - When you have it, you’ll mostly just replace the <source> file below.
+    -->
+      <section class="curtain-stage" aria-label="Intro curtain reveal">
+        <!-- Layer: parked-open curtain image (hidden until video finishes) -->
+        <img
+          class="layer layer-open"
+          id="curtainOpenImg"
+          src="./assets/curtain-open.jpg"
+          alt=""
+          loading="eager"
+        />
+
+        <!-- Layer: video curtain animation (hidden until tap) -->
+        <video
+          class="layer layer-video"
+          id="curtainVideo"
+          playsinline
+          webkit-playsinline
+          preload="auto"
+          muted
+          poster="./assets/curtain-closed.jpg"
+        >
+          <source src="./assets/curtain-video.mp4" type="video/mp4" />
+        </video>
+
+        <!-- Layer: closed curtain image (shown initially) -->
+        <img
+          class="layer layer-closed is-visible"
+          id="curtainClosedImg"
+          src="./assets/curtain-closed.jpg"
+          alt="Closed curtain"
+          loading="eager"
+        />
+
+        <!-- Tap to open -->
+        <button class="open-btn" id="openBtn" type="button">Tap to open</button>
+
+        <!-- Hero text (fades in after tap) -->
+        <div
+          class="hero"
+          id="heroText"
+          aria-hidden="true"
+          style="opacity: 0; visibility: hidden"
+        >
+          <p class="hero-top">
+            YOU ARE <br>CORDIALLY INVITED <br> TO CELEBRATE THE WEDDING <br> OF
+          </p>
+          <h1 class="hero-names">
+            Sharon <br> <span class="hero-and">&amp;</span> <br> Tunde
+          </h1>
+          <p class="hero-bottom">
+            WE WOULD LIKE TO INVITE YOU TO CELEBRATE WITH US THE MOST SPECIAL
+            DAY OF OUR LIVES. IT WOULD BE AN HONOR TO HAVE YOU PRESENT AT THIS
+            IMPORTANT MOMENT.
+          </p>
+        </div>
+        <!-- Scroll indicator (appears after curtain parks) -->
+        <div class="scroll-indicator" id="scrollIndicator" aria-hidden="true">
+          <span class="scroll-text">Scroll</span>
+          <span class="scroll-arrow">↓</span>
+        </div>
+
+        <!-- Mute/Unmute (renders ONLY after tap) -->
+        <button
+          class="audio-toggle is-hidden"
+          id="audioToggle"
+          type="button"
+          aria-label="Mute audio"
+          aria-pressed="false"
+        >
+          <!-- simple icon (no libraries) -->
+          <span class="audio-icon" aria-hidden="true">🔊</span>
+        </button>
+
+        <!-- Audio (starts on tap) -->
+        <audio id="ambienceAudio" preload="auto" loop>
+          <source src="./assets/intro-music.mp3" type="audio/mpeg" />
+        </audio>
+      </section>
+    </main>
+
+    <!-- DATE REVEAL (locks scroll until scratched) -->
+    <section
+      class="date-reveal"
+      id="dateReveal"
+      aria-label="Wedding date reveal"
+    >
+      <div class="date-wrap">
+       
+        <h2 class="date-title">Date Reveal</h2> 
+        <p class="date-mini">Scratch all three circles to continue</p>
+
+        <div
+          class="scratch-row"
+          role="group"
+          aria-label="Scratch to reveal date"
+        >
+          <!-- DAY -->
+          <div class="scratch-card" data-key="day">
+            <div class="scratch-value" aria-hidden="true">10</div>
+            <canvas class="scratch-canvas" width="220" height="220"></canvas>
+          </div>
+
+          <!-- MONTH -->
+          <div class="scratch-card" data-key="month">
+            <div class="scratch-value" aria-hidden="true">Dec</div>
+            <canvas class="scratch-canvas" width="220" height="220"></canvas>
+          </div>
+
+          <!-- YEAR -->
+          <div class="scratch-card" data-key="year">
+            <div class="scratch-value" aria-hidden="true">2026</div>
+            <canvas class="scratch-canvas" width="220" height="220"></canvas>
+          </div>
+        </div>
+
+        <p class="date-footer" id="dateFooterText">We’re getting married!</p>
+      </div>
+
+      <!-- Confetti container -->
+      <div class="confetti" id="confetti" aria-hidden="true"></div>
+    </section>
+
+    <!-- COUNTDOWN -->
+    <section class="countdown" id="countdown" aria-label="Countdown section">
+      <div class="countdown-wrap">
+        <h2 class="countdown-title">Countdown</h2>
+
+        <!-- change datetime anytime later -->
+        <div class="timer" id="timer" data-target="2026-12-10T00:00:00+01:00">
+          <div class="time-box">
+            <div class="time-num" id="cdDays">--</div>
+            <div class="time-label">DAYS</div>
+          </div>
+
+          <div class="time-box">
+            <div class="time-num" id="cdHours">--</div>
+            <div class="time-label">HRS</div>
+          </div>
+
+          <div class="time-box">
+            <div class="time-num" id="cdMins">--</div>
+            <div class="time-label">MIN</div>
+          </div>
+
+          <div class="time-box">
+            <div class="time-num" id="cdSecs">--</div>
+            <div class="time-label">SEC</div>
+          </div>
+        </div>
+
+        <p class="countdown-sub">until the big day</p>
+
+<h2 class="venue-title">Venue</h2> 
+        <div class="venue-grid" aria-label="Venue info">
+
+          
+          <!-- Venue image (you will replace src with your real photo later) -->
+          <figure class="venue-media">
+            <img
+              class="venue-img"
+              src="./assets/thefivepalm.webp"
+              alt="The Five Palm venue"
+              loading="lazy"
+            />
+          </figure>
+
+          <!-- Map -->
+          <div class="venue-map">
+            <iframe
+              title="Map to The Five Palm"
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+              src="https://www.google.com/maps?q=The%20Five%20Palm,%20Remi%20Olowude%20St,%20Eti-Osa,%20Lekki%20106104,%20Lagos&output=embed"
+            ></iframe>
+
+            <div class="venue-meta">
+              <h3 class="venue-name">The Five Palm</h3>
+              <p class="venue-address">
+                Remi Olowude St, Eti-Osa, Lekki 106104, Lagos
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- DRESS CODE -->
+    <section class="dress-code" id="dressCode" aria-label="Dress code section">
+      <div class="dress-wrap">
+        <h2 class="dress-title">Dress Code</h2>
+        <!-- <div class="dress-divider"></div> -->
+
+        <div class="dress-card">
+          <p class="dress-main">
+            We invite you to dress elegantly and formally as we celebrate this
+            special day together.
+          </p>
+
+          <p class="dress-theme">
+            <span class="dress-label">Color of the Day:</span>
+            <span class="dress-color">Mauve</span>
+          </p>
+
+          <p class="dress-note">Kindly avoid wearing white.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- WEDDING REGISTRY -->
+    <section
+      class="registry"
+      id="registry"
+      aria-label="Wedding registry section"
+    >
+      <div class="registry-wrap">
+        <h2 class="registry-title">Wedding Registry</h2>
+
+        <div class="registry-card">
+         
+          <p class="registry-lead">
+            Your presence is the best gift we could receive. However, if you
+            wish to contribute to our new life together, you can do so via bank
+            transfer.
+          </p>
+
+          <p class="registry-love">With all our love</p>
+
+          <div class="bank-box" role="group" aria-label="Bank details">
+            <h3 class="bank-title">Bank details</h3>
+
+            <div class="bank-row">
+              <span class="bank-label">ACCOUNT HOLDER</span>
+              <span class="bank-value">ADEGBESAN BABATUNDE AKINOLA</span>
+            </div>
+
+            <div class="bank-row">
+              <span class="bank-label">BANK</span>
+              <span class="bank-value">PROVIDUS BANK - 6506618712</span>
+            </div>
+
+            <div class="bank-row">
+              <span class="bank-label">REFERENCE</span>
+              <span class="bank-value">Sharon &amp; Tunde Wedding</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- RSVP FORM -->
+    <section class="rsvp" id="rsvp" aria-label="RSVP form section">
+      <div class="rsvp-wrap">
+        <h2 class="rsvp-title">RSVP</h2>
+
+        <div class="rsvp-card" id="rsvpCard">
+          <form class="rsvp-form" id="rsvpForm" novalidate>
+            <div class="field-row">
+              <div class="field">
+                <label for="firstName">First name</label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  autocomplete="given-name"
+                  placeholder="e.g John"
+                  required
+                />
+              </div>
+
+              <div class="field">
+                <label for="lastName">Last name</label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  autocomplete="family-name"
+                  placeholder="e.g Doe"
+                  required
+                />
+              </div>
+            </div>
+            <!-- Side of family (semantic: fieldset + legend) -->
+            <fieldset class="fieldset">
+              <legend>Side of family</legend>
+
+              <div class="radio-row">
+                <label class="radio">
+                  <input type="radio" name="side" value="groom" required />
+                  <span>Groom</span>
+                </label>
+
+                <label class="radio">
+                  <input type="radio" name="side" value="bride" required />
+                  <span>Bride</span>
+                </label>
+              </div>
+            </fieldset>
+            <div class="field">
+              <label for="phone">Phone number</label>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                inputmode="tel"
+                autocomplete="tel"
+                placeholder="e.g. 08012345678"
+                required
+              />
+            </div>
+
+            <!-- Attendance (semantic: fieldset + legend) -->
+            <fieldset class="fieldset">
+              <legend>Will you be attending?</legend>
+
+              <div class="radio-row">
+                <label class="radio">
+                  <input type="radio" name="attendance" value="yes" required />
+                  <span>Yes, I’ll be there</span>
+                </label>
+
+                <label class="radio">
+                  <input type="radio" name="attendance" value="no" required />
+                  <span>No, I can’t make it</span>
+                </label>
+              </div>
+            </fieldset>
+
+            <!-- Plus-one / number of guests -->
+            <div class="field">
+              <label for="guestCount">Number of guests (including you)</label>
+              <select id="guestCount" name="guestCount" required>
+                <option value="" selected disabled>Select</option>
+                <option value="1">Coming Alone</option>
+                <option value="2">2 (Plus one)</option>
+                <option value="3">3 (You and two others)</option>
+              </select>
+              <!-- <p class="help-text">Choose 1 if you’re coming alone.</p> -->
+            </div>
+
+            <!-- Optional message -->
+            <!-- <div class="field">
+              <label for="message"
+                >Message for the couple
+                <span class="optional">(optional)</span></label
+              >
+              <textarea
+                id="message"
+                name="message"
+                rows="4"
+                placeholder="Leave a short note..."
+              ></textarea>
+            </div> -->
+
+            <button class="btn-submit" type="submit">Submit RSVP</button>
+
+            <p class="form-note" id="formNote" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- THANK YOU -->
+    <section class="thank-you" id="thankYou" aria-label="Thank you section">
+      <div class="thank-wrap">
+        <div class="thank-border">
+          <h2 class="thank-title">With Gratitude</h2>
+
+          <p class="thank-message">
+            Thank you for being part of our journey and for sharing in this
+            special moment with us. Your love, support, and presence mean more
+            to us than words can express.
+          </p>
+
+          <p class="thank-signature">
+            With all our love,<br />
+            <span>Sam &amp; Sofia</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- JS -->
+    <script type="module" src="./js/main.js"></script>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+
+    <link rel="stylesheet" href="./admin.css" />
+  </head>
+  <body>
+    <header class="admin-header">
+      <h1>Welcome, Admin</h1>
+      <button id="logoutBtn" class="btn-secondary">Logout</button>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-controls">
+        <input
+          type="search"
+          id="searchInput"
+          placeholder="Search by name, phone or code..."
+          aria-label="Search RSVPs"
+        />
+        <button id="downloadBtn" class="btn-secondary" type="button">
+          Download guest list
+        </button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="rsvp-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Side</th>
+              <th>Phone</th>
+              <th>Attendance</th>
+              <th>Guests</th>
+              <th>Code</th>
+              <th>Checked In</th>
+            </tr>
+          </thead>
+
+          <tbody id="rsvpTableBody">
+            <!-- Rows injected via JS -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <script type="module" src="./admin.js"></script>
+  </body>
+</html>
