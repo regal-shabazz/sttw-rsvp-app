@@ -10,9 +10,13 @@
 
     <link rel="preload" as="image" href="./assets/curtain-closed.jpg" />
     <link rel="preload" as="image" href="./assets/curtain-open.jpg" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   </head>
   <body>
     <!-- INTRO ONLY -->
@@ -66,10 +70,14 @@
           style="opacity: 0; visibility: hidden"
         >
           <p class="hero-top">
-            YOU ARE <br>CORDIALLY INVITED <br> TO CELEBRATE THE WEDDING <br> OF
+            YOU ARE <br />CORDIALLY INVITED <br />
+            TO CELEBRATE THE WEDDING <br />
+            OF
           </p>
           <h1 class="hero-names">
-            Sharon <br> <span class="hero-and">&amp;</span> <br> Tunde
+            Sharon <br />
+            <span class="hero-and">&amp;</span> <br />
+            Tunde
           </h1>
           <p class="hero-bottom">
             WE WOULD LIKE TO INVITE YOU TO CELEBRATE WITH US THE MOST SPECIAL
@@ -97,7 +105,10 @@
 
         <!-- Audio (starts on tap) -->
         <audio id="ambienceAudio" preload="auto" loop>
-          <source src="./assets/intro-music.mp3" type="audio/mpeg" />
+          <source
+            src="./assets/Elvis Presley - Can't Help Falling in Love (Lyrics).mp3"
+            type="audio/mpeg"
+          />
         </audio>
       </section>
     </main>
@@ -109,8 +120,7 @@
       aria-label="Wedding date reveal"
     >
       <div class="date-wrap">
-       
-        <h2 class="date-title">Date Reveal</h2> 
+        <h2 class="date-title">Date Reveal</h2>
         <p class="date-mini">Scratch all three circles to continue</p>
 
         <div
@@ -172,12 +182,10 @@
           </div>
         </div>
 
-        <p class="countdown-sub">until the big day</p>
+        <p class="countdown-sub">The countdown is on! <br> We're excited to create our love with our favorite people. <br> Here's to laughter, dancing and unforgettable memories.</p>
 
-<h2 class="venue-title">Venue</h2> 
+        <h2 class="venue-title">Venue</h2>
         <div class="venue-grid" aria-label="Venue info">
-
-          
           <!-- Venue image (you will replace src with your real photo later) -->
           <figure class="venue-media">
             <img
@@ -239,7 +247,20 @@
         <h2 class="registry-title">Wedding Registry</h2>
 
         <div class="registry-card">
-         
+          <div class="registry-actions">
+            <a
+              class="btn btn-primary"
+              href="https://withjoy.com/stthewedding/registry"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View Gift Registry
+            </a>
+            <p class="registry-hint">
+              Click the button above to open our curated gift list in a new tab.
+            </p>
+          </div>
+
           <p class="registry-lead">
             Your presence is the best gift we could receive. However, if you
             wish to contribute to our new life together, you can do so via bank
@@ -351,12 +372,34 @@
             <div class="field">
               <label for="guestCount">Number of guests (including you)</label>
               <select id="guestCount" name="guestCount" required>
-                <option value="" selected disabled>Select</option>
+                <option value="" selected disabled>Click to select</option>
                 <option value="1">Coming Alone</option>
                 <option value="2">2 (Plus one)</option>
                 <option value="3">3 (You and two others)</option>
               </select>
-              <!-- <p class="help-text">Choose 1 if you’re coming alone.</p> -->
+            </div>
+
+            <div class="field">
+              <label for="asoEbi">Would you like Aso Ebi?</label>
+              <p class="help-text">
+                Please make sure to include your contact above if you want to
+                purchase Aso Ebi
+              </p>
+              
+              <select id="asoEbi" name="asoEbi">
+                <option value="" selected disabled>Click to select</option>
+                <option value="women-gele-asoebi">
+                  Yes — Gele and Aso Ebi (Women)
+                </option>
+                <option value="men-cap-asoebi">
+                  Yes — Cap and Aso Ebi (Men)
+                </option>
+                <option value="women-gele-ipele">
+                  Yes — Gele and Ipele (Women)
+                </option>
+                <option value="men-cap-only">Yes — Cap only (Men)</option>
+                <option value="">No, I don't want</option>
+              </select>
             </div>
 
             <!-- Optional message -->

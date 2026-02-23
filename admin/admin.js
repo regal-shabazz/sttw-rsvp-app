@@ -77,6 +77,13 @@ if (tableBody) {
   const logoutBtn = $("logoutBtn");
   const searchInput = $("searchInput");
   const downloadBtn = document.getElementById("downloadBtn");
+  // Stats DOM
+  const statTotalHeads = document.getElementById("statTotalHeads");
+  const statYesCount = document.getElementById("statYesCount");
+  const statSoloUnits = document.getElementById("statSoloUnits");
+  const statPlusOneUnits = document.getElementById("statPlusOneUnits");
+  const statPlusTwoUnits = document.getElementById("statPlusTwoUnits");
+  const statAsoEbi = document.getElementById("statAsoEbi");
 
   function downloadCSV(rows) {
     if (!rows?.length) {
@@ -134,9 +141,8 @@ if (tableBody) {
   }
 
   let allRows = []; // cache for search
- searchInput?.addEventListener("input", applySearch);
+  searchInput?.addEventListener("input", applySearch);
   downloadBtn?.addEventListener("click", () => downloadCSV(allRows));
- 
 
   // Hard-protect dashboard: if not logged in, redirect to /admin
   onAuthStateChanged(auth, async (user) => {
@@ -180,7 +186,6 @@ if (tableBody) {
       return;
     }
 
-   
     tableBody.innerHTML = items
       .map((r) => {
         const name = escapeHTML(fmtName(r) || "-");
@@ -215,30 +220,79 @@ if (tableBody) {
     });
   }
 
-   function applySearch() {
-      const q = (searchInput?.value || "").trim().toLowerCase();
+  function computeStats(rows) {
+    const attending = rows.filter((r) => String(r.attendance || "") === "yes");
 
-      if (!q) {
-        renderTable(allRows);
-        return;
-      }
+    const totalHeads = attending.reduce((sum, r) => {
+      const n = Number(r.guestCount || 0);
+      return sum + (Number.isFinite(n) ? n : 0);
+    }, 0);
 
-      const filtered = allRows.filter((r) => {
-        const name = fmtName(r).toLowerCase();
-        const code = String(r.rsvpCode || "").toLowerCase();
-        const phone = String(r.phone || "").toLowerCase();
-        const side = String(r.side || "").toLowerCase();
+    const yesCount = attending.length;
 
-        return (
-          name.includes(q) ||
-          code.includes(q) ||
-          phone.includes(q) ||
-          side.includes(q)
-        );
-      });
+    const soloUnits = attending.filter(
+      (r) => Number(r.guestCount) === 1,
+    ).length;
+    const plusOneUnits = attending.filter(
+      (r) => Number(r.guestCount) === 2,
+    ).length;
+    const plusTwoUnits = attending.filter(
+      (r) => Number(r.guestCount) === 3,
+    ).length;
 
-      renderTable(filtered);
+    // asoEbi: count requests among attending guests
+    const asoEbiCount = attending.filter((r) => {
+      const v = r.asoEbi;
+      return v !== null && v !== undefined && String(v).trim() !== "";
+    }).length;
+
+    return {
+      totalHeads,
+      yesCount,
+      soloUnits,
+      plusOneUnits,
+      plusTwoUnits,
+      asoEbiCount,
+    };
+  }
+
+  function renderStats(stats) {
+    if (statTotalHeads) statTotalHeads.textContent = String(stats.totalHeads);
+    if (statYesCount) statYesCount.textContent = String(stats.yesCount);
+    if (statSoloUnits) statSoloUnits.textContent = String(stats.soloUnits);
+    if (statPlusOneUnits)
+      statPlusOneUnits.textContent = String(stats.plusOneUnits);
+    if (statPlusTwoUnits)
+      statPlusTwoUnits.textContent = String(stats.plusTwoUnits);
+    if (statAsoEbi) statAsoEbi.textContent = String(stats.asoEbiCount);
+  }
+
+  function applySearch() {
+    const q = (searchInput?.value || "").trim().toLowerCase();
+
+    if (!q) {
+      renderTable(allRows);
+      renderStats(computeStats(allRows));
+      return;
     }
+
+    const filtered = allRows.filter((r) => {
+      const name = fmtName(r).toLowerCase();
+      const code = String(r.rsvpCode || "").toLowerCase();
+      const phone = String(r.phone || "").toLowerCase();
+      const side = String(r.side || "").toLowerCase();
+
+      return (
+        name.includes(q) ||
+        code.includes(q) ||
+        phone.includes(q) ||
+        side.includes(q)
+      );
+    });
+
+    renderTable(filtered);
+    renderStats(computeStats(filtered));
+  }
 
   async function onToggleCheckin(e) {
     const btn = e.currentTarget;
@@ -271,7 +325,7 @@ if (tableBody) {
       record.checkedIn = next;
 
       // Re-render table
-      applySearch()
+      applySearch();
     } catch (err) {
       console.error(err);
       alert("Check-in update failed. Check rules or connection.");
