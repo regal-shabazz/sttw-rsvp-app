@@ -9,41 +9,10 @@ import {
 function makeCode(len = 5) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
-  for (let i = 0; i < len; i++)
+  for (let i = 0; i < len; i++) {
     out += chars[Math.floor(Math.random() * chars.length)];
-  return out;
-}
-
-function prettyAsoEbi(v) {
-  const map = {
-    "women-gele-asoebi": "Gele and Aso Ebi (Women)",
-    "men-cap-asoebi": "Cap and Aso Ebi (Men)",
-    "women-gele-ipele": "Gele and Ipele (Women)",
-    "men-cap-only": "Cap only (Men)",
-  };
-  return map[v] || "";
-}
-
-/** EmailJS config (paste your real IDs) */
-const EMAILJS_PUBLIC_KEY = "acNFPamuQdlrAuHDA";
-const EMAILJS_SERVICE_ID = "service_cjxrqqy";
-const EMAILJS_TEMPLATE_ID = "template_qxj7evf";
-
-function sendAsoEbiEmail({ fullName, phone, asoEbiPretty }) {
-  const emailjs = window.emailjs;
-  if (!emailjs) return Promise.resolve();
-
-  // initialize once globally
-  if (!window.__emailjs_init) {
-    emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-    window.__emailjs_init = true;
   }
-
-  return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, {
-    guest_name: fullName,
-    guest_phone: phone,
-    asoebi_choice: asoEbiPretty,
-  });
+  return out;
 }
 
 export function initRSVP() {
@@ -51,7 +20,7 @@ export function initRSVP() {
   const card = document.getElementById("rsvpCard");
   const note = document.getElementById("formNote");
 
-  if (!form || !card) return;
+  if (!form || !card || !note) return;
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -61,17 +30,12 @@ export function initRSVP() {
 
     const firstName = String(fd.get("firstName") || "").trim();
     const lastName = String(fd.get("lastName") || "").trim();
-    const attendance = String(fd.get("attendance") || "").trim();
     const guestCountRaw = String(fd.get("guestCount") || "").trim();
-    const message = String(fd.get("message") || "").trim();
     const side = String(fd.get("side") || "").trim();
     const phone = String(fd.get("phone") || "").trim();
 
-    // ✅ NEW
-    const asoEbi = String(fd.get("asoEbi") || "").trim(); // "" or allowed value
-    const asoEbiPretty = prettyAsoEbi(asoEbi);
-
-    if (!firstName || !lastName || !side || !phone || !attendance || !guestCountRaw) {
+    // REQUIRED: firstName, lastName, side, phone, guestCount
+    if (!firstName || !lastName || !side || !phone || !guestCountRaw) {
       note.textContent = "Please complete the required fields.";
       return;
     }
@@ -83,38 +47,26 @@ export function initRSVP() {
     }
 
     const rsvpCode = makeCode(5);
-    const fullName = `${firstName} ${lastName}`.trim();
 
     const submitBtn = form.querySelector('button[type="submit"]');
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      // ✅ Write to Firestore (store asoEbi too)
+      // Write to Firestore (NO attendance, NO message, NO asoEbi)
       await addDoc(collection(db, "rsvps"), {
         firstName,
         lastName,
         side,
         phone,
-
-        attendance,
         guestCount,
-        message: message || "",
         rsvpCode,
-
-        asoEbi: asoEbi || null,
 
         createdAt: serverTimestamp(),
         checkedIn: false,
         checkedInAt: null,
       });
 
-      // ✅ Email only if guest picked aso ebi
-      if (asoEbi) {
-        // Don’t block RSVP success if email fails
-        sendAsoEbiEmail({ fullName, phone, asoEbiPretty }).catch(() => {});
-      }
-
-      // ✅ Replace content with thank-you
+      // Replace content with thank-you
       card.innerHTML = `
         <div class="rsvp-thanks" role="status" aria-live="polite">
           <h3 style="margin:0 0 12px; color:#5b2a25; font-size:18px;">Thank you, ${firstName}!</h3>

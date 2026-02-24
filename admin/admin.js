@@ -34,10 +34,6 @@ function fmtName(r) {
   return `${r.firstName || ""} ${r.lastName || ""}`.trim();
 }
 
-function fmtAttendance(v) {
-  return v === "yes" ? "Yes" : v === "no" ? "No" : "-";
-}
-
 /* ---------- Login Page ---------- */
 const loginForm = $("loginForm");
 if (loginForm) {
@@ -77,13 +73,12 @@ if (tableBody) {
   const logoutBtn = $("logoutBtn");
   const searchInput = $("searchInput");
   const downloadBtn = document.getElementById("downloadBtn");
-  // Stats DOM
+
+  // Stats DOM (now only guest-count based stats)
   const statTotalHeads = document.getElementById("statTotalHeads");
-  const statYesCount = document.getElementById("statYesCount");
   const statSoloUnits = document.getElementById("statSoloUnits");
   const statPlusOneUnits = document.getElementById("statPlusOneUnits");
   const statPlusTwoUnits = document.getElementById("statPlusTwoUnits");
-  const statAsoEbi = document.getElementById("statAsoEbi");
 
   function downloadCSV(rows) {
     if (!rows?.length) {
@@ -96,7 +91,6 @@ if (tableBody) {
       "Last Name",
       "Side",
       "Phone",
-      "Attendance",
       "Guest Count",
       "RSVP Code",
       "Checked In",
@@ -117,7 +111,6 @@ if (tableBody) {
           escapeCSV(r.lastName),
           escapeCSV(r.side),
           escapeCSV(r.phone),
-          escapeCSV(r.attendance),
           escapeCSV(r.guestCount),
           escapeCSV(r.rsvpCode),
           escapeCSV(r.checkedIn ? "yes" : "no"),
@@ -161,7 +154,7 @@ if (tableBody) {
   });
 
   async function loadRSVPs() {
-    tableBody.innerHTML = `<tr><td colspan="7">Loading...</td></tr>`;
+    tableBody.innerHTML = `<tr><td colspan="6">Loading...</td></tr>`;
 
     try {
       const q = query(collection(db, "rsvps"), orderBy("createdAt", "desc"));
@@ -176,13 +169,13 @@ if (tableBody) {
       applySearch(); // renders filtered or full list depending on search box
     } catch (err) {
       console.error(err);
-      tableBody.innerHTML = `<tr><td colspan="7">Failed to load RSVPs.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="6">Failed to load RSVPs.</td></tr>`;
     }
   }
 
   function renderTable(items) {
     if (!items.length) {
-      tableBody.innerHTML = `<tr><td colspan="7">No RSVPs yet.</td></tr>`;
+      tableBody.innerHTML = `<tr><td colspan="6">No RSVPs yet.</td></tr>`;
       return;
     }
 
@@ -191,7 +184,6 @@ if (tableBody) {
         const name = escapeHTML(fmtName(r) || "-");
         const side = escapeHTML(r.side ?? "-");
         const phone = escapeHTML(r.phone ?? "-");
-        const attendance = escapeHTML(fmtAttendance(r.attendance));
         const guests = escapeHTML(r.guestCount ?? "-");
         const code = escapeHTML(r.rsvpCode ?? "-");
         const checked = !!r.checkedIn;
@@ -201,7 +193,6 @@ if (tableBody) {
           <td>${name}</td>
           <td>${side}</td>
           <td>${phone}</td>
-          <td>${attendance}</td>
           <td>${guests}</td>
           <td>${code}</td>
           <td>
@@ -221,50 +212,31 @@ if (tableBody) {
   }
 
   function computeStats(rows) {
-    const attending = rows.filter((r) => String(r.attendance || "") === "yes");
-
-    const totalHeads = attending.reduce((sum, r) => {
+    // Now: stats are based on all RSVPs (since attendance was removed)
+    const totalHeads = rows.reduce((sum, r) => {
       const n = Number(r.guestCount || 0);
       return sum + (Number.isFinite(n) ? n : 0);
     }, 0);
 
-    const yesCount = attending.length;
-
-    const soloUnits = attending.filter(
-      (r) => Number(r.guestCount) === 1,
-    ).length;
-    const plusOneUnits = attending.filter(
-      (r) => Number(r.guestCount) === 2,
-    ).length;
-    const plusTwoUnits = attending.filter(
-      (r) => Number(r.guestCount) === 3,
-    ).length;
-
-    // asoEbi: count requests among attending guests
-    const asoEbiCount = attending.filter((r) => {
-      const v = r.asoEbi;
-      return v !== null && v !== undefined && String(v).trim() !== "";
-    }).length;
+    const soloUnits = rows.filter((r) => Number(r.guestCount) === 1).length;
+    const plusOneUnits = rows.filter((r) => Number(r.guestCount) === 2).length;
+    const plusTwoUnits = rows.filter((r) => Number(r.guestCount) === 3).length;
 
     return {
       totalHeads,
-      yesCount,
       soloUnits,
       plusOneUnits,
       plusTwoUnits,
-      asoEbiCount,
     };
   }
 
   function renderStats(stats) {
     if (statTotalHeads) statTotalHeads.textContent = String(stats.totalHeads);
-    if (statYesCount) statYesCount.textContent = String(stats.yesCount);
     if (statSoloUnits) statSoloUnits.textContent = String(stats.soloUnits);
     if (statPlusOneUnits)
       statPlusOneUnits.textContent = String(stats.plusOneUnits);
     if (statPlusTwoUnits)
       statPlusTwoUnits.textContent = String(stats.plusTwoUnits);
-    if (statAsoEbi) statAsoEbi.textContent = String(stats.asoEbiCount);
   }
 
   function applySearch() {

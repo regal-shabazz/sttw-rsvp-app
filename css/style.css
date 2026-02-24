@@ -576,6 +576,146 @@ body.scroll-locked {
   }
 }
 
+/* --- Aso Ebi Info (inside Dress Code card) --- */
+.asoebi-info {
+  margin-top: 22px;
+  padding: 18px 16px;
+  border-radius: 14px;
+
+  /* slightly darker than the dress-card background, still warm */
+  background: rgba(244, 226, 223, 0.75);
+
+  border: 1px solid rgba(91, 42, 37, 0.14);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.06);
+}
+
+.asoebi-title {
+  margin: 0 0 8px;
+  color: #5b2a25;
+  font-size: 18px;
+  letter-spacing: 0.2px;
+}
+
+.asoebi-sub {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(80, 40, 35, 0.65);
+}
+
+.asoebi-lead {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(80, 40, 35, 0.8);
+}
+
+.asoebi-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 14px;
+  display: grid;
+  gap: 10px;
+}
+
+.asoebi-list li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  padding: 10px 10px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(91, 42, 37, 0.10);
+}
+
+.asoebi-item {
+  color: #5b2a25;
+  font-size: 13px;
+}
+
+.asoebi-price {
+  color: #5b2a25;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.asoebi-paybox {
+  margin: 6px 0 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 12px;
+}
+
+.asoebi-row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.asoebi-row:last-child {
+  border-bottom: 0;
+}
+
+.asoebi-label {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(137, 91, 85, 0.75);
+}
+
+.asoebi-value {
+  font-size: 13px;
+  color: #5b2a25;
+  word-break: break-word;
+  font-weight: 600;
+}
+
+.asoebi-note,
+.asoebi-deadline {
+  margin: 10px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: rgba(80, 40, 35, 0.82);
+}
+
+.asoebi-signoff {
+  margin: 14px 0 0;
+  color: rgba(80, 40, 35, 0.75);
+  font-size: 13px;
+}
+
+.asoebi-signoff span {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 600;
+  color: #8e6c8a; /* reuse mauve accent */
+  font-family: "Mea Culpa", cursive;
+  font-size: 22px;
+}
+
+@media (max-width: 900px) {
+  .asoebi-title {
+    font-size: 16px;
+  }
+
+  .asoebi-lead,
+  .asoebi-item,
+  .asoebi-price,
+  .asoebi-value,
+  .asoebi-note,
+  .asoebi-deadline,
+  .asoebi-signoff {
+    font-size: 10px;
+  }
+
+  .asoebi-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
 /* ===== REGISTRY SECTION ===== */
 .registry {
   background: #ffffff; /* alternate background (Dress was #fbf7f2) */

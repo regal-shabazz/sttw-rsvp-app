@@ -16,7 +16,6 @@
       href="https://fonts.googleapis.com/css2?family=Mea+Culpa&display=swap"
       rel="stylesheet"
     />
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   </head>
   <body>
     <!-- INTRO ONLY -->
@@ -182,7 +181,11 @@
           </div>
         </div>
 
-        <p class="countdown-sub">The countdown is on! <br> We're excited to create our love with our favorite people. <br> Here's to laughter, dancing and unforgettable memories.</p>
+        <p class="countdown-sub">
+          The countdown is on! <br />
+          We're excited to create our love with our favorite people. <br />
+          Here's to laughter, dancing and unforgettable memories.
+        </p>
 
         <h2 class="venue-title">Venue</h2>
         <div class="venue-grid" aria-label="Venue info">
@@ -232,12 +235,53 @@
             <span class="dress-color">Mauve</span>
           </p>
 
-          <p style="color: green" >REQUEST FOR ASO EBI IN THE RSVP FORM BELOW</p>
+                    <!-- Aso Ebi Info -->
+          <div class="asoebi-info" role="note" aria-label="Aso Ebi information">
+            <h3 class="asoebi-title">
+              Aso Ebi Details <span class="asoebi-sub">(Traditional Wedding)</span>
+            </h3>
+
+            <p class="asoebi-lead">
+              Aso Ebi details for the traditional wedding of Sharon and Tunde.
+            </p>
+
+            <ul class="asoebi-list">
+              <li><span class="asoebi-item">Aso Ebi &amp; Gele (Women)</span><span class="asoebi-price">₦200,000</span></li>
+              <li><span class="asoebi-item">Aso Ebi &amp; Fila (Men)</span><span class="asoebi-price">₦170,000</span></li>
+              <li><span class="asoebi-item">Gele &amp; Ipele</span><span class="asoebi-price">₦40,000</span></li>
+              <li><span class="asoebi-item">Gele</span><span class="asoebi-price">₦20,000</span></li>
+              <li><span class="asoebi-item">Fila</span><span class="asoebi-price">₦10,000</span></li>
+            </ul>
+
+            <div class="asoebi-paybox" aria-label="Payment details">
+              <div class="asoebi-row">
+                <span class="asoebi-label">Account name</span>
+                <span class="asoebi-value">Nikkyshary</span>
+              </div>
+              <div class="asoebi-row">
+                <span class="asoebi-label">Bank</span>
+                <span class="asoebi-value">FCMB</span>
+              </div>
+              <div class="asoebi-row">
+                <span class="asoebi-label">Account number</span>
+                <span class="asoebi-value">6161539015</span>
+              </div>
+            </div>
+
+            <p class="asoebi-note">
+              Please use your <strong>name</strong> as the payment reference and forward proof of payment to
+              <strong>+234-706-630-7596</strong> (WhatsApp only).
+            </p>
+
+            <p class="asoebi-deadline">
+              Kindly make payment on/before <strong>Saturday, August 1, 2026</strong>.
+            </p>
+
+            <p class="asoebi-signoff">Thank you,<br /><span>The family of the couple</span></p>
+          </div>
         </div>
       </div>
     </section>
-
-    
 
     <!-- WEDDING REGISTRY -->
     <section
@@ -353,23 +397,6 @@
               />
             </div>
 
-            <!-- Attendance (semantic: fieldset + legend) -->
-            <fieldset class="fieldset">
-              <legend>Will you be attending?</legend>
-
-              <div class="radio-row">
-                <label class="radio">
-                  <input type="radio" name="attendance" value="yes" required />
-                  <span>Yes, I’ll be there</span>
-                </label>
-
-                <label class="radio">
-                  <input type="radio" name="attendance" value="no" required />
-                  <span>No, I can’t make it</span>
-                </label>
-              </div>
-            </fieldset>
-
             <!-- Plus-one / number of guests -->
             <div class="field">
               <label for="guestCount">Number of guests (including you)</label>
@@ -380,43 +407,6 @@
                 <option value="3">3 (You and two others)</option>
               </select>
             </div>
-
-            <div class="field">
-              <label for="asoEbi">Would you like Aso Ebi?</label>
-              <p class="help-text">
-                Please make sure to include your contact above if you want to
-                purchase Aso Ebi
-              </p>
-              
-              <select id="asoEbi" name="asoEbi">
-                <option value="" selected disabled>Click to select</option>
-                <option value="women-gele-asoebi">
-                  Yes — Gele and Aso Ebi (Women)
-                </option>
-                <option value="men-cap-asoebi">
-                  Yes — Cap and Aso Ebi (Men)
-                </option>
-                <option value="women-gele-ipele">
-                  Yes — Gele and Ipele (Women)
-                </option>
-                <option value="men-cap-only">Yes — Cap only (Men)</option>
-                <option value="">No, I don't want</option>
-              </select>
-            </div>
-
-            <!-- Optional message -->
-            <!-- <div class="field">
-              <label for="message"
-                >Message for the couple
-                <span class="optional">(optional)</span></label
-              >
-              <textarea
-                id="message"
-                name="message"
-                rows="4"
-                placeholder="Leave a short note..."
-              ></textarea>
-            </div> -->
 
             <button class="btn-submit" type="submit">Submit RSVP</button>
 
