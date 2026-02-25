@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebM Alpha Test</title>
+
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+    }
+
+    .stage {
+      position: relative;
+      height: 100vh;
+      width: 100%;
+      overflow: hidden;
+
+      /* Test background */
+      background: linear-gradient(135deg, #5b2a25, #8e6c8a);
+      /* or test with:
+        
+      */
+ background: url('./assets/sttw.jpeg') center/cover no-repeat;
+
+    }
+
+    video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+    }
+
+    .label {
+      position: absolute;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 14px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+
+    <!-- Replace with your WebM file -->
+    <video autoplay muted playsinline>
+      <source src="./curtain-introo.webm" type="video/webm" />
+    </video>
+
+    <div class="label">
+      If alpha works, you’ll see the gradient through the opening
+    </div>
+
+  </div>
+
+</body>
+</html>

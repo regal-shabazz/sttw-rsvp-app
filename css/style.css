@@ -774,7 +774,7 @@ body.scroll-locked {
   margin-inline: auto;
   text-align: center;
   color: whitesmoke;
-  box-shadow: 0 10px 20px rgb(82, 78, 78);
+  box-shadow: 0 5px 5px rgb(144, 140, 140);
   text-decoration: none;
   
 }
