@@ -269,49 +269,86 @@
             <span class="dress-color">Mauve</span>
           </p>
 
-                    <!-- Aso Ebi Info -->
-          <div class="asoebi-info" role="note" aria-label="Aso Ebi information">
-            <h3 class="asoebi-title">
-              Aso Ebi Details <span class="asoebi-sub">(Traditional Wedding)</span>
-            </h3>
+                    <!-- Aso Ebi Toggle -->
+          <div class="asoebi-toggle" aria-label="Aso Ebi preference">
+            <p class="asoebi-question">Would you like to buy Aso Ebi?</p>
 
-            <p class="asoebi-lead">
-              Aso Ebi details for the traditional wedding of Sharon and Tunde.
-            </p>
-
-            <ul class="asoebi-list">
-              <li><span class="asoebi-item">Aso Ebi &amp; Gele (Women)</span><span class="asoebi-price">₦200,000</span></li>
-              <li><span class="asoebi-item">Aso Ebi &amp; Fila (Men)</span><span class="asoebi-price">₦170,000</span></li>
-              <li><span class="asoebi-item">Gele &amp; Ipele</span><span class="asoebi-price">₦40,000</span></li>
-              <li><span class="asoebi-item">Gele</span><span class="asoebi-price">₦20,000</span></li>
-              <li><span class="asoebi-item">Fila</span><span class="asoebi-price">₦10,000</span></li>
-            </ul>
-
-            <div class="asoebi-paybox" aria-label="Payment details">
-              <div class="asoebi-row">
-                <span class="asoebi-label">Account name</span>
-                <span class="asoebi-value">Nikkyshary</span>
-              </div>
-              <div class="asoebi-row">
-                <span class="asoebi-label">Bank</span>
-                <span class="asoebi-value">FCMB</span>
-              </div>
-              <div class="asoebi-row">
-                <span class="asoebi-label">Account number</span>
-                <span class="asoebi-value">6161539015</span>
-              </div>
+            <div class="asoebi-choice" role="group" aria-label="Choose Yes or No">
+              <button class="asoebi-btn" type="button" data-asoebi-choice="yes">
+                Yes
+              </button>
+              <button class="asoebi-btn" type="button" data-asoebi-choice="no">
+                No
+              </button>
             </div>
 
-            <p class="asoebi-note">
-              Please use your <strong>name</strong> as the payment reference and forward proof of payment to
-              <strong>+234-706-630-7596</strong> (WhatsApp only).
+            <p class="asoebi-hint" id="asoebiHint">
+              Select an option to view details.
             </p>
+          </div>
 
-            <p class="asoebi-deadline">
-              Kindly make payment on/before <strong>Saturday, August 1, 2026</strong>.
+          <!-- YES: show details -->
+          <div
+            class="asoebi-panel asoebi-panel--yes is-hidden"
+            id="asoebiPanelYes"
+          >
+            <!-- Aso Ebi Info -->
+            <div class="asoebi-info" role="note" aria-label="Aso Ebi information">
+              <h3 class="asoebi-title">
+                Aso Ebi Details
+                <span class="asoebi-sub">(Traditional Wedding)</span>
+              </h3>
+
+              <p class="asoebi-lead">
+                Aso Ebi details for the traditional wedding of Sharon and Tunde.
+              </p>
+
+              <ul class="asoebi-list">
+                <li><span class="asoebi-item">Aso Ebi &amp; Gele (Women)</span><span class="asoebi-price">₦200,000</span></li>
+                <li><span class="asoebi-item">Aso Ebi &amp; Fila (Men)</span><span class="asoebi-price">₦170,000</span></li>
+                <li><span class="asoebi-item">Gele &amp; Ipele</span><span class="asoebi-price">₦40,000</span></li>
+                <li><span class="asoebi-item">Gele</span><span class="asoebi-price">₦20,000</span></li>
+                <li><span class="asoebi-item">Fila</span><span class="asoebi-price">₦10,000</span></li>
+              </ul>
+
+              <div class="asoebi-paybox" aria-label="Payment details">
+                <div class="asoebi-row">
+                  <span class="asoebi-label">Account name</span>
+                  <span class="asoebi-value">Nikkyshary</span>
+                </div>
+                <div class="asoebi-row">
+                  <span class="asoebi-label">Bank</span>
+                  <span class="asoebi-value">FCMB</span>
+                </div>
+                <div class="asoebi-row">
+                  <span class="asoebi-label">Account number</span>
+                  <span class="asoebi-value">6161539015</span>
+                </div>
+              </div>
+
+              <p class="asoebi-note">
+                Please use your <strong>name</strong> as the payment reference and forward proof of payment to
+                <strong>+234-706-630-7596</strong> (WhatsApp only).
+              </p>
+
+              <p class="asoebi-deadline">
+                Kindly make payment on/before <strong>Saturday, August 1, 2026</strong>.
+              </p>
+
+              <p class="asoebi-signoff">Thank you,<br /><span>The family of the couple</span></p>
+            </div>
+          </div>
+
+          <!-- NO: show message -->
+          <div
+            class="asoebi-panel asoebi-panel--no is-hidden"
+            id="asoebiPanelNo"
+            role="status"
+            aria-live="polite"
+          >
+            <p class="asoebi-no-msg">
+              No worries — we can’t wait to celebrate with you! 💛
             </p>
-
-            <p class="asoebi-signoff">Thank you,<br /><span>The family of the couple</span></p>
           </div>
         </div>
       </div>

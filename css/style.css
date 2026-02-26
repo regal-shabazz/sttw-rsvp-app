@@ -576,6 +576,96 @@ body.scroll-locked {
   }
 }
 
+
+
+
+
+/* --- Aso Ebi Toggle (Yes/No) --- */
+.asoebi-toggle {
+  margin-top: 18px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: rgba(244, 226, 223, 0.45);
+  border: 1px solid rgba(91, 42, 37, 0.10);
+  text-align: center;
+}
+
+.asoebi-question {
+  margin: 0 0 10px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(80, 40, 35, 0.75);
+}
+
+.asoebi-choice {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;   /* centers the buttons */
+}
+
+.asoebi-btn {
+  border: 1px solid rgba(91, 42, 37, 0.25);
+  background: rgba(255, 255, 255, 0.8);
+  color: #5b2a25;
+  padding: 10px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  transition: transform 120ms ease, opacity 120ms ease, background 120ms ease;
+}
+
+.asoebi-btn:active {
+  transform: scale(0.98);
+}
+
+.asoebi-btn.is-active {
+  background: #5b2a25;
+  color: #ffffff;
+  border-color: #5b2a25;
+}
+
+.asoebi-hint {
+  margin: 10px 0 0;
+  font-size: 12px;
+  color: rgba(80, 40, 35, 0.7);
+}
+
+/* Panels */
+.asoebi-panel.is-hidden {
+  display: none;
+}
+
+.asoebi-panel--yes {
+  /* keeps your existing .asoebi-info spacing */
+}
+
+.asoebi-panel--no {
+  margin-top: 14px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: rgba(244, 226, 223, 0.75);
+  border: 1px solid rgba(91, 42, 37, 0.14);
+}
+
+.asoebi-no-msg {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(80, 40, 35, 0.85);
+  line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+  .asoebi-question,
+  .asoebi-btn,
+  .asoebi-hint,
+  .asoebi-no-msg {
+    font-size: 10px;
+  }
+}
 /* --- Aso Ebi Info (inside Dress Code card) --- */
 .asoebi-info {
   margin-top: 22px;
