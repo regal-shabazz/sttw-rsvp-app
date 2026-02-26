@@ -1105,6 +1105,8 @@ body.scroll-locked {
   color: rgba(80, 40, 35, 0.7);
 }
 
+
+
 @media (max-width: 900px) {
   .rsvp-form .field-row {
     grid-template-columns: 1fr;

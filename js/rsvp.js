@@ -9,10 +9,25 @@ import {
 function makeCode(len = 5) {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let out = "";
-  for (let i = 0; i < len; i++) {
-    out += chars[Math.floor(Math.random() * chars.length)];
-  }
+  for (let i = 0; i < len; i++) out += chars[Math.floor(Math.random() * chars.length)];
   return out;
+}
+
+function updatePlusOneUI({ guestCount, wrap, firstEl, lastEl }) {
+  const show = guestCount === 2;
+
+  // show/hide using your existing global helper class
+  wrap.classList.toggle("is-hidden", !show);
+
+  // clear values when hiding (prevents accidental submission)
+  if (!show) {
+    firstEl.value = "";
+    lastEl.value = "";
+  }
+
+  // optional: required only when visible (better UX)
+  firstEl.required = show;
+  lastEl.required = show;
 }
 
 export function initRSVP() {
@@ -20,39 +35,32 @@ export function initRSVP() {
   const card = document.getElementById("rsvpCard");
   const note = document.getElementById("formNote");
 
-  const guestSelect = document.getElementById("guestCount");
-  const plusOneWrap = document.getElementById("plusOneWrap");
-  const plusOneFirst = document.getElementById("plusOneFirstName");
-  const plusOneLast = document.getElementById("plusOneLastName");
-
   if (!form || !card || !note) return;
 
-  function setPlusOneVisible(isVisible) {
-    if (!plusOneWrap || !plusOneFirst || !plusOneLast) return;
+  const guestCountSelect = document.getElementById("guestCount");
+  const plusOneWrap = document.getElementById("plusOneWrap");
+  const plusOneFirstEl = document.getElementById("plusOneFirstName");
+  const plusOneLastEl = document.getElementById("plusOneLastName");
 
-    if (isVisible) {
-      plusOneWrap.classList.remove("is-hidden");
-      plusOneFirst.required = true;
-      plusOneLast.required = true;
-    } else {
-      plusOneWrap.classList.add("is-hidden");
-      plusOneFirst.required = false;
-      plusOneLast.required = false;
+  if (!guestCountSelect || !plusOneWrap || !plusOneFirstEl || !plusOneLastEl) return;
 
-      // clear so we don’t accidentally submit stale values
-      plusOneFirst.value = "";
-      plusOneLast.value = "";
-    }
-  }
+  // ✅ set correct state on load
+  updatePlusOneUI({
+    guestCount: Number(guestCountSelect.value || 0),
+    wrap: plusOneWrap,
+    firstEl: plusOneFirstEl,
+    lastEl: plusOneLastEl,
+  });
 
-  function syncPlusOneUI() {
-    const v = String(guestSelect?.value || "").trim();
-    setPlusOneVisible(v === "2");
-  }
-
-  // initial + on change
-  syncPlusOneUI();
-  guestSelect?.addEventListener("change", syncPlusOneUI);
+  // ✅ react to changes
+  guestCountSelect.addEventListener("change", () => {
+    updatePlusOneUI({
+      guestCount: Number(guestCountSelect.value || 0),
+      wrap: plusOneWrap,
+      firstEl: plusOneFirstEl,
+      lastEl: plusOneLastEl,
+    });
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -62,31 +70,33 @@ export function initRSVP() {
 
     const firstName = String(fd.get("firstName") || "").trim();
     const lastName = String(fd.get("lastName") || "").trim();
-    const guestCountRaw = String(fd.get("guestCount") || "").trim();
     const side = String(fd.get("side") || "").trim();
     const phone = String(fd.get("phone") || "").trim();
+
+    const guestCountRaw = String(fd.get("guestCount") || "").trim();
+    const guestCount = Number(guestCountRaw);
+
+    const plusOneFirstName = String(fd.get("plusOneFirstName") || "").trim();
+    const plusOneLastName = String(fd.get("plusOneLastName") || "").trim();
 
     if (!firstName || !lastName || !side || !phone || !guestCountRaw) {
       note.textContent = "Please complete the required fields.";
       return;
     }
 
-    const guestCount = Number(guestCountRaw);
+    // only allow 1 or 2
     if (!Number.isInteger(guestCount) || (guestCount !== 1 && guestCount !== 2)) {
-      note.textContent = "Please select a valid guest option.";
+      note.textContent = "Please select either Coming alone or Plus one.";
       return;
     }
 
-    // Plus-one validation (ONLY when guestCount=2)
-    let plusOneFirstName = "";
-    let plusOneLastName = "";
-
     if (guestCount === 2) {
-      plusOneFirstName = String(fd.get("plusOneFirstName") || "").trim();
-      plusOneLastName = String(fd.get("plusOneLastName") || "").trim();
-
       if (!plusOneFirstName || !plusOneLastName) {
-        note.textContent = "Please enter your plus-one's first and last name.";
+        note.textContent = "Please enter your plus-one’s first and last name.";
+        return;
+      }
+      if (plusOneFirstName.length > 50 || plusOneLastName.length > 50) {
+        note.textContent = "Plus-one name is too long (max 50 characters).";
         return;
       }
     }
@@ -97,24 +107,21 @@ export function initRSVP() {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      const payload = {
+      await addDoc(collection(db, "rsvps"), {
         firstName,
         lastName,
         side,
         phone,
         guestCount,
         rsvpCode,
+
+        plusOneFirstName: guestCount === 2 ? plusOneFirstName : null,
+        plusOneLastName: guestCount === 2 ? plusOneLastName : null,
+
         createdAt: serverTimestamp(),
         checkedIn: false,
         checkedInAt: null,
-      };
-
-      if (guestCount === 2) {
-        payload.plusOneFirstName = plusOneFirstName;
-        payload.plusOneLastName = plusOneLastName;
-      }
-
-      await addDoc(collection(db, "rsvps"), payload);
+      });
 
       card.innerHTML = `
         <div class="rsvp-thanks" role="status" aria-live="polite">
