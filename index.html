@@ -471,12 +471,43 @@
             <!-- Plus-one / number of guests -->
             <div class="field">
               <label for="guestCount">Number of guests (including you)</label>
-              <select id="guestCount" name="guestCount" required>
-                <option value="" selected disabled>Click to select</option>
-                <option value="1">Coming Alone</option>
-                <option value="2">2 (Plus one)</option>
-                <option value="3">3 (You and two others)</option>
-              </select>
+                <select id="guestCount" name="guestCount" required>
+                  <option value="" selected disabled>Click to select</option>
+                  <option value="1">Coming alone</option>
+                  <option value="2">Plus one</option>
+                </select>
+                <!-- Plus-one details (shown only if guestCount = 2) -->
+<div class="plusone is-hidden" id="plusOneWrap" aria-label="Plus one details">
+  <p class="plusone-title">Plus-one details</p>
+
+  <div class="field-row">
+    <div class="field">
+      <label for="plusOneFirstName">Plus-one first name</label>
+      <input
+        id="plusOneFirstName"
+        name="plusOneFirstName"
+        type="text"
+        autocomplete="given-name"
+        placeholder="e.g Jane"
+      />
+    </div>
+
+    <div class="field">
+      <label for="plusOneLastName">Plus-one last name</label>
+      <input
+        id="plusOneLastName"
+        name="plusOneLastName"
+        type="text"
+        autocomplete="family-name"
+        placeholder="e.g Doe"
+      />
+    </div>
+  </div>
+
+  <p class="plusone-hint">
+    Only required if you selected <strong>Plus one</strong>.
+  </p>
+</div>
             </div>
 
             <button class="btn-submit" type="submit">Submit RSVP</button>

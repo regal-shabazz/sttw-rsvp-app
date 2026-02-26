@@ -639,6 +639,10 @@ body.scroll-locked {
   display: none;
 }
 
+.is-hidden {
+  display: none !important;
+}
+
 .asoebi-panel--yes {
   /* keeps your existing .asoebi-info spacing */
 }
@@ -1076,6 +1080,29 @@ body.scroll-locked {
   font-size: 12px;
   color: rgba(80, 40, 35, 0.7);
   min-height: 18px;
+}
+
+/* Plus-one block */
+.plusone {
+  margin-top: 10px;
+  padding: 14px 14px;
+  border-radius: 14px;
+  background: rgba(244, 226, 223, 0.45);
+  border: 1px solid rgba(91, 42, 37, 0.10);
+}
+
+.plusone-title {
+  margin: 0 0 10px;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(80, 40, 35, 0.75);
+}
+
+.plusone-hint {
+  margin: 0;
+  font-size: 12px;
+  color: rgba(80, 40, 35, 0.7);
 }
 
 @media (max-width: 900px) {

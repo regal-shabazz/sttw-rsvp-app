@@ -20,7 +20,39 @@ export function initRSVP() {
   const card = document.getElementById("rsvpCard");
   const note = document.getElementById("formNote");
 
+  const guestSelect = document.getElementById("guestCount");
+  const plusOneWrap = document.getElementById("plusOneWrap");
+  const plusOneFirst = document.getElementById("plusOneFirstName");
+  const plusOneLast = document.getElementById("plusOneLastName");
+
   if (!form || !card || !note) return;
+
+  function setPlusOneVisible(isVisible) {
+    if (!plusOneWrap || !plusOneFirst || !plusOneLast) return;
+
+    if (isVisible) {
+      plusOneWrap.classList.remove("is-hidden");
+      plusOneFirst.required = true;
+      plusOneLast.required = true;
+    } else {
+      plusOneWrap.classList.add("is-hidden");
+      plusOneFirst.required = false;
+      plusOneLast.required = false;
+
+      // clear so we don’t accidentally submit stale values
+      plusOneFirst.value = "";
+      plusOneLast.value = "";
+    }
+  }
+
+  function syncPlusOneUI() {
+    const v = String(guestSelect?.value || "").trim();
+    setPlusOneVisible(v === "2");
+  }
+
+  // initial + on change
+  syncPlusOneUI();
+  guestSelect?.addEventListener("change", syncPlusOneUI);
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -34,16 +66,29 @@ export function initRSVP() {
     const side = String(fd.get("side") || "").trim();
     const phone = String(fd.get("phone") || "").trim();
 
-    // REQUIRED: firstName, lastName, side, phone, guestCount
     if (!firstName || !lastName || !side || !phone || !guestCountRaw) {
       note.textContent = "Please complete the required fields.";
       return;
     }
 
     const guestCount = Number(guestCountRaw);
-    if (!Number.isInteger(guestCount) || guestCount < 1) {
-      note.textContent = "Please select a valid guest count.";
+    if (!Number.isInteger(guestCount) || (guestCount !== 1 && guestCount !== 2)) {
+      note.textContent = "Please select a valid guest option.";
       return;
+    }
+
+    // Plus-one validation (ONLY when guestCount=2)
+    let plusOneFirstName = "";
+    let plusOneLastName = "";
+
+    if (guestCount === 2) {
+      plusOneFirstName = String(fd.get("plusOneFirstName") || "").trim();
+      plusOneLastName = String(fd.get("plusOneLastName") || "").trim();
+
+      if (!plusOneFirstName || !plusOneLastName) {
+        note.textContent = "Please enter your plus-one's first and last name.";
+        return;
+      }
     }
 
     const rsvpCode = makeCode(5);
@@ -52,21 +97,25 @@ export function initRSVP() {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      // Write to Firestore (NO attendance, NO message, NO asoEbi)
-      await addDoc(collection(db, "rsvps"), {
+      const payload = {
         firstName,
         lastName,
         side,
         phone,
         guestCount,
         rsvpCode,
-
         createdAt: serverTimestamp(),
         checkedIn: false,
         checkedInAt: null,
-      });
+      };
 
-      // Replace content with thank-you
+      if (guestCount === 2) {
+        payload.plusOneFirstName = plusOneFirstName;
+        payload.plusOneLastName = plusOneLastName;
+      }
+
+      await addDoc(collection(db, "rsvps"), payload);
+
       card.innerHTML = `
         <div class="rsvp-thanks" role="status" aria-live="polite">
           <h3 style="margin:0 0 12px; color:#5b2a25; font-size:18px;">Thank you, ${firstName}!</h3>

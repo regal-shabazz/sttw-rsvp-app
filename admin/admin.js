@@ -34,6 +34,13 @@ function fmtName(r) {
   return `${r.firstName || ""} ${r.lastName || ""}`.trim();
 }
 
+function fmtPlusOne(r) {
+  const fn = String(r.plusOneFirstName || "").trim();
+  const ln = String(r.plusOneLastName || "").trim();
+  const full = `${fn} ${ln}`.trim();
+  return full;
+}
+
 /* ---------- Login Page ---------- */
 const loginForm = $("loginForm");
 if (loginForm) {
@@ -53,7 +60,6 @@ if (loginForm) {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      // after login, go dashboard
       window.location.href = "./dashboard.html";
     } catch (err) {
       console.error(err);
@@ -61,7 +67,6 @@ if (loginForm) {
     }
   });
 
-  // If already logged in, go dashboard
   onAuthStateChanged(auth, (user) => {
     if (user) window.location.href = "./dashboard.html";
   });
@@ -74,11 +79,10 @@ if (tableBody) {
   const searchInput = $("searchInput");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  // Stats DOM (now only guest-count based stats)
+  // Stats DOM (Plus-two removed)
   const statTotalHeads = document.getElementById("statTotalHeads");
   const statSoloUnits = document.getElementById("statSoloUnits");
   const statPlusOneUnits = document.getElementById("statPlusOneUnits");
-  const statPlusTwoUnits = document.getElementById("statPlusTwoUnits");
 
   function downloadCSV(rows) {
     if (!rows?.length) {
@@ -87,8 +91,10 @@ if (tableBody) {
     }
 
     const header = [
-      "First Name",
-      "Last Name",
+      "Main Guest First Name",
+      "Main Guest Last Name",
+      "Plus One First Name",
+      "Plus One Last Name",
       "Side",
       "Phone",
       "Guest Count",
@@ -98,7 +104,6 @@ if (tableBody) {
 
     const escapeCSV = (v) => {
       const s = String(v ?? "");
-      // wrap in quotes if it contains comma/quote/newline
       if (/[",\n]/.test(s)) return `"${s.replaceAll('"', '""')}"`;
       return s;
     };
@@ -109,6 +114,8 @@ if (tableBody) {
         [
           escapeCSV(r.firstName),
           escapeCSV(r.lastName),
+          escapeCSV(r.plusOneFirstName ?? ""),
+          escapeCSV(r.plusOneLastName ?? ""),
           escapeCSV(r.side),
           escapeCSV(r.phone),
           escapeCSV(r.guestCount),
@@ -121,30 +128,26 @@ if (tableBody) {
     const blob = new Blob([lines.join("\n")], {
       type: "text/csv;charset=utf-8",
     });
-    const url = URL.createObjectURL(blob);
 
+    const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
     a.download = `guest-list-${new Date().toISOString().slice(0, 10)}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();
-
     URL.revokeObjectURL(url);
   }
 
-  let allRows = []; // cache for search
+  let allRows = [];
   searchInput?.addEventListener("input", applySearch);
   downloadBtn?.addEventListener("click", () => downloadCSV(allRows));
 
-  // Hard-protect dashboard: if not logged in, redirect to /admin
   onAuthStateChanged(auth, async (user) => {
     if (!user) {
       window.location.href = "./index.html";
       return;
     }
-
-    // Logged in: load RSVPs
     await loadRSVPs();
   });
 
@@ -154,6 +157,7 @@ if (tableBody) {
   });
 
   async function loadRSVPs() {
+    // NOTE: table has 6 columns (Name, Side, Phone, Guests, Code, Checked In)
     tableBody.innerHTML = `<tr><td colspan="6">Loading...</td></tr>`;
 
     try {
@@ -161,12 +165,10 @@ if (tableBody) {
       const snap = await getDocs(q);
 
       const items = [];
-      snap.forEach((d) => {
-        items.push({ id: d.id, ...d.data() });
-      });
+      snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
 
       allRows = items;
-      applySearch(); // renders filtered or full list depending on search box
+      applySearch();
     } catch (err) {
       console.error(err);
       tableBody.innerHTML = `<tr><td colspan="6">Failed to load RSVPs.</td></tr>`;
@@ -181,7 +183,20 @@ if (tableBody) {
 
     tableBody.innerHTML = items
       .map((r) => {
-        const name = escapeHTML(fmtName(r) || "-");
+        const nameMain = escapeHTML(fmtName(r) || "-");
+        const plusOneName = fmtPlusOne(r);
+        const hasPlusOne =
+          Number(r.guestCount) === 2 && String(plusOneName).trim().length > 0;
+
+        const nameCell = hasPlusOne
+          ? `
+            <div class="name-cell">
+              <div class="name-main">${nameMain}</div>
+              <div class="plusone-name">+1: ${escapeHTML(plusOneName)}</div>
+            </div>
+          `
+          : `<div class="name-cell"><div class="name-main">${nameMain}</div></div>`;
+
         const side = escapeHTML(r.side ?? "-");
         const phone = escapeHTML(r.phone ?? "-");
         const guests = escapeHTML(r.guestCount ?? "-");
@@ -189,30 +204,28 @@ if (tableBody) {
         const checked = !!r.checkedIn;
 
         return `
-        <tr data-id="${r.id}">
-          <td>${name}</td>
-          <td>${side}</td>
-          <td>${phone}</td>
-          <td>${guests}</td>
-          <td>${code}</td>
-          <td>
-            <button class="checkin-btn ${checked ? "is-checked" : ""}" type="button">
-              ${checked ? "Checked in" : "Check in"}
-            </button>
-          </td>
-        </tr>
-      `;
+          <tr data-id="${r.id}">
+            <td>${nameCell}</td>
+            <td>${side}</td>
+            <td>${phone}</td>
+            <td>${guests}</td>
+            <td>${code}</td>
+            <td>
+              <button class="checkin-btn ${checked ? "is-checked" : ""}" type="button">
+                ${checked ? "Checked in" : "Check in"}
+              </button>
+            </td>
+          </tr>
+        `;
       })
       .join("");
 
-    // bind check-in buttons
     tableBody.querySelectorAll(".checkin-btn").forEach((btn) => {
       btn.addEventListener("click", onToggleCheckin);
     });
   }
 
   function computeStats(rows) {
-    // Now: stats are based on all RSVPs (since attendance was removed)
     const totalHeads = rows.reduce((sum, r) => {
       const n = Number(r.guestCount || 0);
       return sum + (Number.isFinite(n) ? n : 0);
@@ -220,14 +233,8 @@ if (tableBody) {
 
     const soloUnits = rows.filter((r) => Number(r.guestCount) === 1).length;
     const plusOneUnits = rows.filter((r) => Number(r.guestCount) === 2).length;
-    const plusTwoUnits = rows.filter((r) => Number(r.guestCount) === 3).length;
 
-    return {
-      totalHeads,
-      soloUnits,
-      plusOneUnits,
-      plusTwoUnits,
-    };
+    return { totalHeads, soloUnits, plusOneUnits };
   }
 
   function renderStats(stats) {
@@ -235,8 +242,6 @@ if (tableBody) {
     if (statSoloUnits) statSoloUnits.textContent = String(stats.soloUnits);
     if (statPlusOneUnits)
       statPlusOneUnits.textContent = String(stats.plusOneUnits);
-    if (statPlusTwoUnits)
-      statPlusTwoUnits.textContent = String(stats.plusTwoUnits);
   }
 
   function applySearch() {
@@ -250,12 +255,14 @@ if (tableBody) {
 
     const filtered = allRows.filter((r) => {
       const name = fmtName(r).toLowerCase();
+      const plusOne = fmtPlusOne(r).toLowerCase();
       const code = String(r.rsvpCode || "").toLowerCase();
       const phone = String(r.phone || "").toLowerCase();
       const side = String(r.side || "").toLowerCase();
 
       return (
         name.includes(q) ||
+        plusOne.includes(q) ||
         code.includes(q) ||
         phone.includes(q) ||
         side.includes(q)
@@ -293,10 +300,7 @@ if (tableBody) {
         });
       }
 
-      // Update local cache
       record.checkedIn = next;
-
-      // Re-render table
       applySearch();
     } catch (err) {
       console.error(err);
