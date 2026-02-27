@@ -13,19 +13,19 @@ function makeCode(len = 5) {
   return out;
 }
 
-function updatePlusOneUI({ guestCount, wrap, firstEl, lastEl }) {
+function setPlusOneVisibility({ wrap, firstEl, lastEl, guestCount }) {
   const show = guestCount === 2;
 
-  // show/hide using your existing global helper class
+  // show/hide block
   wrap.classList.toggle("is-hidden", !show);
 
-  // clear values when hiding (prevents accidental submission)
+  // clear values when hidden (prevents accidental stale data)
   if (!show) {
     firstEl.value = "";
     lastEl.value = "";
   }
 
-  // optional: required only when visible (better UX)
+  // toggle required for native UX
   firstEl.required = show;
   lastEl.required = show;
 }
@@ -44,21 +44,23 @@ export function initRSVP() {
 
   if (!guestCountSelect || !plusOneWrap || !plusOneFirstEl || !plusOneLastEl) return;
 
-  // ✅ set correct state on load
-  updatePlusOneUI({
-    guestCount: Number(guestCountSelect.value || 0),
+  // ✅ initial state on load (blank select => hidden)
+  const initialGuestCount = Number(guestCountSelect.value || 0);
+  setPlusOneVisibility({
     wrap: plusOneWrap,
     firstEl: plusOneFirstEl,
     lastEl: plusOneLastEl,
+    guestCount: initialGuestCount,
   });
 
-  // ✅ react to changes
+  // ✅ dynamic state on change
   guestCountSelect.addEventListener("change", () => {
-    updatePlusOneUI({
-      guestCount: Number(guestCountSelect.value || 0),
+    const guestCount = Number(guestCountSelect.value || 0);
+    setPlusOneVisibility({
       wrap: plusOneWrap,
       firstEl: plusOneFirstEl,
       lastEl: plusOneLastEl,
+      guestCount,
     });
   });
 
@@ -70,26 +72,28 @@ export function initRSVP() {
 
     const firstName = String(fd.get("firstName") || "").trim();
     const lastName = String(fd.get("lastName") || "").trim();
+    const guestCountRaw = String(fd.get("guestCount") || "").trim();
     const side = String(fd.get("side") || "").trim();
     const phone = String(fd.get("phone") || "").trim();
 
-    const guestCountRaw = String(fd.get("guestCount") || "").trim();
     const guestCount = Number(guestCountRaw);
 
     const plusOneFirstName = String(fd.get("plusOneFirstName") || "").trim();
     const plusOneLastName = String(fd.get("plusOneLastName") || "").trim();
 
+    // REQUIRED
     if (!firstName || !lastName || !side || !phone || !guestCountRaw) {
       note.textContent = "Please complete the required fields.";
       return;
     }
 
-    // only allow 1 or 2
+    // Only allow 1 or 2 now
     if (!Number.isInteger(guestCount) || (guestCount !== 1 && guestCount !== 2)) {
       note.textContent = "Please select either Coming alone or Plus one.";
       return;
     }
 
+    // If plus one selected, require plus-one names
     if (guestCount === 2) {
       if (!plusOneFirstName || !plusOneLastName) {
         note.textContent = "Please enter your plus-one’s first and last name.";
@@ -107,21 +111,25 @@ export function initRSVP() {
     if (submitBtn) submitBtn.disabled = true;
 
     try {
-      await addDoc(collection(db, "rsvps"), {
+      // ✅ Build payload WITHOUT plusOne fields unless guestCount === 2
+      const payload = {
         firstName,
         lastName,
         side,
         phone,
         guestCount,
         rsvpCode,
-
-        plusOneFirstName: guestCount === 2 ? plusOneFirstName : null,
-        plusOneLastName: guestCount === 2 ? plusOneLastName : null,
-
         createdAt: serverTimestamp(),
         checkedIn: false,
         checkedInAt: null,
-      });
+      };
+
+      if (guestCount === 2) {
+        payload.plusOneFirstName = plusOneFirstName;
+        payload.plusOneLastName = plusOneLastName;
+      }
+
+      await addDoc(collection(db, "rsvps"), payload);
 
       card.innerHTML = `
         <div class="rsvp-thanks" role="status" aria-live="polite">
