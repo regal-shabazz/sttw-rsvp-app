@@ -70,7 +70,7 @@ export function initIntro() {
           hero.style.visibility = "";
         }
         stage.classList.add("show-hero");
-      }, 1500);
+      }, 2500);
     };
 
     let revealed = false;
