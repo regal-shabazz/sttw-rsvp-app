@@ -17,6 +17,12 @@ body {
     Arial,
     sans-serif;
   background: #ffffff;
+
+}
+
+.w{
+  max-width: 900px;
+  margin-inline: auto;
 }
 
 /* Fullscreen stage */
@@ -120,7 +126,7 @@ bottom: 15%;
   margin: 0 auto;
   font-size: 8px;
   letter-spacing: 2px;
-  color: rgba(80, 40, 35, 0.75);
+  color: #fff8dc;
   text-transform: uppercase;
   position: relative;
 }
@@ -139,7 +145,7 @@ bottom: 15%;
   margin: 14px 0 10px;
   font-size: clamp(50px, 7vw, 100px);
   line-height: 1;
-  color: #5b2a25;
+  color: #c9a96e;
    font-family: "Mea Culpa", cursive;
 }
 
@@ -643,9 +649,7 @@ body.scroll-locked {
   display: none !important;
 }
 
-.asoebi-panel--yes {
-  /* keeps your existing .asoebi-info spacing */
-}
+
 
 .asoebi-panel--no {
   margin-top: 14px;

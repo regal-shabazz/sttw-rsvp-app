@@ -1,12 +1,6 @@
 // js/intro.js
 import { lockScroll, unlockScroll } from "./scrollLock.js";
-
-import {
-  showLayer,
-  hideLayer,
-  preloadImage,
-  waitForVideoCanPlay,
-} from "./dom.js";
+import { showLayer, hideLayer, preloadImage, waitForVideoCanPlay } from "./dom.js";
 
 const scrollIndicator = document.getElementById("scrollIndicator");
 
@@ -15,21 +9,23 @@ export function initIntro() {
 
   const openBtn = document.getElementById("openBtn");
   const closedImg = document.getElementById("curtainClosedImg");
-  const openImg = document.getElementById("curtainOpenImg");
+
+  // ✅ open curtain image is OPTIONAL now
+  const openImg = document.getElementById("curtainOpenImg"); // may be null
+
   const video = document.getElementById("curtainVideo");
 
   const audio = document.getElementById("ambienceAudio");
   const audioToggle = document.getElementById("audioToggle");
   const audioIcon = audioToggle?.querySelector(".audio-icon");
 
-  lockScroll(); // lock scroll from first load until curtain parks
+  if (!stage || !openBtn || !closedImg || !video || !audio || !audioToggle) return;
+
+  lockScroll(); // lock scroll from first load until video ends
 
   function setAudioUI(isMuted) {
     audioToggle.setAttribute("aria-pressed", String(isMuted));
-    audioToggle.setAttribute(
-      "aria-label",
-      isMuted ? "Unmute audio" : "Mute audio",
-    );
+    audioToggle.setAttribute("aria-label", isMuted ? "Unmute audio" : "Mute audio");
     if (audioIcon) audioIcon.textContent = isMuted ? "🔇" : "🔊";
   }
 
@@ -69,8 +65,10 @@ export function initIntro() {
 
       setTimeout(() => {
         const hero = document.getElementById("heroText");
-        hero.style.opacity = "";
-        hero.style.visibility = "";
+        if (hero) {
+          hero.style.opacity = "";
+          hero.style.visibility = "";
+        }
         stage.classList.add("show-hero");
       }, 1500);
     };
@@ -83,7 +81,7 @@ export function initIntro() {
         revealed = true;
         revealVideo();
       },
-      { once: true },
+      { once: true }
     );
 
     // play video NOW (still inside the tap gesture chain)
@@ -93,9 +91,13 @@ export function initIntro() {
     } catch (err) {
       console.error("Safari blocked video play:", err);
 
-      // fallback: skip animation, just show parked curtain
-      showLayer(openImg);
+      // fallback: skip animation; just reveal hero + unlock
       hideLayer(closedImg);
+
+      // if openImg exists, show it; otherwise keep video hidden too
+      if (openImg) showLayer(openImg);
+      else hideLayer(video);
+
       stage.classList.add("show-hero");
       scrollIndicator?.classList.add("is-visible");
       unlockScroll();
@@ -108,12 +110,10 @@ export function initIntro() {
     }, 900);
 
     // ---------- NOW do your preloads (optional) ----------
-    // These are safe here; video already started.
-    Promise.allSettled([
-      preloadImage(closedImg),
-      preloadImage(openImg),
-      waitForVideoCanPlay(video),
-    ]);
+    // openImg is optional, so preload only if it exists
+    const preloadJobs = [preloadImage(closedImg), waitForVideoCanPlay(video)];
+    if (openImg) preloadJobs.push(preloadImage(openImg));
+    Promise.allSettled(preloadJobs);
 
     // ---------- NOW start ambience audio ----------
     try {
@@ -125,21 +125,28 @@ export function initIntro() {
       setAudioUI(true);
     }
 
-    // end swap
+    // ✅ IMPORTANT: Always unlock scroll when video ends (no dependency on openImg)
     video.addEventListener(
       "ended",
       () => {
-        showLayer(openImg);
+        // If you still have an open-curtain image, you can swap to it.
+        // If not, keep the final frame of the video visible (curtain open + baked background).
+        if (openImg) {
+          showLayer(openImg);
 
-        setTimeout(() => {
-          hideLayer(video);
+          setTimeout(() => {
+            hideLayer(video);
+            scrollIndicator?.classList.add("is-visible");
+            unlockScroll();
+          }, 320);
+        } else {
+          // Keep video visible on last frame
+          // (most browsers keep the last frame by default; no need to hide video)
           scrollIndicator?.classList.add("is-visible");
-
-          // ✅ unlock scroll only after curtain parks
           unlockScroll();
-        }, 320);
+        }
       },
-      { once: true },
+      { once: true }
     );
   }
 
