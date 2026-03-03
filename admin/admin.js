@@ -79,10 +79,8 @@ if (tableBody) {
   const searchInput = $("searchInput");
   const downloadBtn = document.getElementById("downloadBtn");
 
-  // Stats DOM (Plus-two removed)
-  const statTotalHeads = document.getElementById("statTotalHeads");
-  const statSoloUnits = document.getElementById("statSoloUnits");
-  const statPlusOneUnits = document.getElementById("statPlusOneUnits");
+  // Stats DOM 
+const statTotalRsvps = document.getElementById("statTotalRsvps");
 
   function downloadCSV(rows) {
     if (!rows?.length) {
@@ -225,24 +223,15 @@ if (tableBody) {
     });
   }
 
-  function computeStats(rows) {
-    const totalHeads = rows.reduce((sum, r) => {
-      const n = Number(r.guestCount || 0);
-      return sum + (Number.isFinite(n) ? n : 0);
-    }, 0);
+ function computeStats(rows) {
+  return {
+    totalRsvps: rows.length,
+  };
+}
 
-    const soloUnits = rows.filter((r) => Number(r.guestCount) === 1).length;
-    const plusOneUnits = rows.filter((r) => Number(r.guestCount) === 2).length;
-
-    return { totalHeads, soloUnits, plusOneUnits };
-  }
-
-  function renderStats(stats) {
-    if (statTotalHeads) statTotalHeads.textContent = String(stats.totalHeads);
-    if (statSoloUnits) statSoloUnits.textContent = String(stats.soloUnits);
-    if (statPlusOneUnits)
-      statPlusOneUnits.textContent = String(stats.plusOneUnits);
-  }
+function renderStats(stats) {
+  if (statTotalRsvps) statTotalRsvps.textContent = String(stats.totalRsvps);
+}
 
   function applySearch() {
     const q = (searchInput?.value || "").trim().toLowerCase();
